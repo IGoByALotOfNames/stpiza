@@ -1,12 +1,12 @@
-import streamlit as st
-import streamlit.components.v1 as components
+from flask import Flask, request, Response
+import requests
 
-if st.button("Open"):
-    components.html(
-        f'''
-        <script type="text/javascript">
-        window.open("{st.secrets["URL"]}", "_blank").focus();
-        </script>
-        ''',
-        height=300,
-    )
+app = Flask(__name__)
+
+@app.route('/proxy/<path:url>', methods=['GET'])
+def proxy(url):
+    response = requests.get(f"https://{url}")
+    return Response(response.content, status=response.status_code, headers=dict(response.headers))
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
